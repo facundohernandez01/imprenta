@@ -1,0 +1,38 @@
+# Entornos virtuales
+.venv/
+venv/
+env/
+ENV/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# PyInstaller
+dist/
+build/
+*.spec
+
+# Bases de datos locales y backups
+*.db
+*.db-wal
+*.db-shm
+backups/
+presupuestos/
+
+# Config local / certificados
+*.key
+*.pem
+*.pfx
+*.p12
+config*.ini
+.env
+
+# Editores / SO
+.vscode/
+.idea/
+*.swp
+.DS_Store
+Thumbs.db
