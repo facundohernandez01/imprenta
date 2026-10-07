@@ -22,7 +22,23 @@ class AppStyles:
     INFO       = "#4080e0"
 
     @classmethod
+    def _resource_url(cls, filename: str) -> str:
+        """Retorna ruta absoluta de un recurso (funciona en dev y en .exe).
+
+        QSS exige `image: url(...)` con archivos reales: los triángulos con
+        bordes CSS y las flechas nativas no se dibujan cuando se personaliza
+        ::drop-down / ::up-button, por eso se usan estos PNG.
+        Nota: debe ser ruta plana, el esquema file:// no lo toma.
+        """
+        import sys
+        from pathlib import Path
+        base = Path(getattr(sys, "_MEIPASS", Path(__file__).resolve().parent.parent))
+        return str(base / "resources" / filename).replace("\\", "/")
+
+    @classmethod
     def get_dark_theme(cls) -> str:
+        url_down = cls._resource_url("arrow_down.png")
+        url_up = cls._resource_url("arrow_up.png")
         return f"""
         /* ── BASE ── */
         QWidget {{
@@ -132,15 +148,45 @@ class AppStyles:
             border: 1px solid {cls.BORDER};
             border-radius: 4px;
             padding: 5px 8px;
+            padding-right: 24px;
         }}
         QSpinBox:focus, QDoubleSpinBox:focus {{
             border-color: {cls.ACCENT};
         }}
-        QSpinBox::up-button, QDoubleSpinBox::up-button,
-        QSpinBox::down-button, QDoubleSpinBox::down-button {{
+        QSpinBox::up-button, QDoubleSpinBox::up-button {{
+            subcontrol-origin: border;
+            subcontrol-position: top right;
             background-color: {cls.BG_WIDGET};
             border: none;
-            width: 18px;
+            border-top-right-radius: 4px;
+            width: 20px;
+            height: 16px;
+        }}
+        QSpinBox::down-button, QDoubleSpinBox::down-button {{
+            subcontrol-origin: border;
+            subcontrol-position: bottom right;
+            background-color: {cls.BG_WIDGET};
+            border: none;
+            border-bottom-right-radius: 4px;
+            width: 20px;
+            height: 16px;
+        }}
+        QSpinBox::up-button:hover, QDoubleSpinBox::up-button:hover,
+        QSpinBox::down-button:hover, QDoubleSpinBox::down-button:hover {{
+            background-color: {cls.ACCENT};
+        }}
+        /* Flechas con imagen (sin esto, al personalizar
+           ::up-button/::down-button Qt oculta las flechas nativas
+           y los contadores quedan "vacíos"). */
+        QSpinBox::up-arrow, QDoubleSpinBox::up-arrow {{
+            image: url({url_up});
+            width: 14px;
+            height: 10px;
+        }}
+        QSpinBox::down-arrow, QDoubleSpinBox::down-arrow {{
+            image: url({url_down});
+            width: 14px;
+            height: 10px;
         }}
 
         /* ── COMBOBOX ── */
@@ -150,14 +196,31 @@ class AppStyles:
             border: 1px solid {cls.BORDER};
             border-radius: 4px;
             padding: 6px 10px;
+            padding-right: 30px;
             min-height: 28px;
         }}
         QComboBox:focus {{
             border-color: {cls.ACCENT};
         }}
         QComboBox::drop-down {{
+            subcontrol-origin: padding;
+            subcontrol-position: top right;
             border: none;
+            border-left: 1px solid {cls.BORDER};
+            border-top-right-radius: 4px;
+            border-bottom-right-radius: 4px;
+            background-color: {cls.BG_WIDGET};
             width: 24px;
+        }}
+        QComboBox::drop-down:hover {{
+            background-color: {cls.ACCENT};
+        }}
+        /* Flecha con imagen (sin esto, al personalizar ::drop-down
+           Qt oculta la flecha nativa y el combo queda sin indicador). */
+        QComboBox::down-arrow {{
+            image: url({url_down});
+            width: 14px;
+            height: 10px;
         }}
         QComboBox QAbstractItemView {{
             background-color: {cls.BG_LIGHT};
@@ -173,13 +236,28 @@ class AppStyles:
             border: 1px solid {cls.BORDER};
             border-radius: 4px;
             padding: 5px 8px;
+            padding-right: 30px;
         }}
         QDateEdit:focus {{
             border-color: {cls.ACCENT};
         }}
         QDateEdit::drop-down {{
+            subcontrol-origin: padding;
+            subcontrol-position: top right;
             border: none;
+            border-left: 1px solid {cls.BORDER};
+            border-top-right-radius: 4px;
+            border-bottom-right-radius: 4px;
+            background-color: {cls.BG_WIDGET};
             width: 24px;
+        }}
+        QDateEdit::drop-down:hover {{
+            background-color: {cls.ACCENT};
+        }}
+        QDateEdit::down-arrow {{
+            image: url({url_down});
+            width: 14px;
+            height: 10px;
         }}
 
         /* ── TABLAS ── */
